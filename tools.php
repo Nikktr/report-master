@@ -1,11 +1,7 @@
 <?
-require_once("classes/phpdebug.php");  // Класс для вывода отладочной инфы в консоль браузера (JS concole.log)
+require_once("config.php");  // Класс для вывода отладочной инфы в консоль браузера (JS concole.log)
 $debug = 1; // Вывод отладочной инфы в шаблон   1=выводить
 $debugInfo = '';
-
-define('APP_ID', 'local.567a70e72655c9.88132993');
-define('APP_SECRET_CODE', '082d1b3123d74113ef76ace313270160');
-define('APP_REG_URL', 'https://mkaarbat.ru/apps/hourly-reports/index.php');
 
 $arDate = array(
     'last_month_year' => date('Y', strtotime('now -1 month')),
@@ -28,20 +24,8 @@ $arDate = array(
 		                            date('m', strtotime('now -1 month')) . "-01")),
 );
 
-// Параметры подключения к базе данных
-$dbSettings = array(
-  'host' => 'localhost',
-  'user' => 'u0135165_default',
-  'pass' => 'MXE8i!i9',
-  'db' => 'u0135165_default',
-  'port' => 3306,
-  'charset' => 'utf8',
-);
-
 // Каталог с шаблонами Twig - шаблонизатор
 $twigTemplatesDir = 'views';
-
-
 
 /**
  * @param integer $weekNumber Номер недели в месяце.
