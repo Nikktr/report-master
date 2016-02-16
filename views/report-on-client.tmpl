@@ -1,7 +1,7 @@
 {% if show_download_btn == 'yes' %}
     <div class="col-xs-10 v-space-15">
         <a href="/apps/hourly-reports/reports/{{ xlsxFile }}" class="btn btn-warning">Скачать отчет в формате Excel</a>
-        <a href="/apps/hourly-reports/reports/{{ pdfFile }}" class="btn btn-warning">Скачать отчет в формате Pdf</a>
+        {#<a href="/apps/hourly-reports/reports/{{ pdfFile }}" class="btn btn-warning">Скачать отчет в формате Pdf</a>#}
     </div>
     <div class="clearfix"></div>
 {% endif %}
@@ -25,7 +25,6 @@
             </thead>
             <tbody>
             {% for group in data %}
-
                 {% if group.id != 0 %}
                     <tr>
                         <td colspan="4"></td>
@@ -48,7 +47,7 @@
                             {% endif %}
                             <span class="alt-task-name"
                                     {% if saved_report == 'no' %}
-                                        contenteditable="true"
+                                contenteditable="true"
                                     {% endif %}><b>{{ group.objReportName }}</b></span>
                             {% if saved_report == 'no' %}
                                 <button class="{{ group.id }}" style="display: none">Сохранить</button>
@@ -57,61 +56,45 @@
                     </tr>
                 {% endif %}
 
-                    {% for item in group.items %}
-                        <tr>
-                            <td>
-                                <p class="text-center" style="width:10px; padding-top: 15px;">{{ loop.index }}</p>
-                            </td>
-                            <td class="text-center">
-                                <p style="padding-top: 15px;">{{ item.correct_item_date }}</p>
-                            </td>
-                            <td class="text-center width-100" data-item_id="{{ item.id }}">
-                                <p class="elapsed-item-txt"
-                                   data-item_elapsed="{{ item.item_elapsed }}"
-                                   style="padding-top: 15px;">{{ item.item_elapsed_hr }} ч. {{ item.item_elapsed_min }} мин. </p>
-                            </td>
-                            <td data-item_id="{{ item.id }}">
-                                <p class="action-item-txt"
-                                        {% if saved_report == 'no' %}
-                                            contenteditable="true"
-                                        {% endif %}
-                                   style="float: none; white-space: pre-line;"><b>{{ item.item_action }}</b></p>
-                                <button class="{{ item.id }}" style="display: none">Сохранить (Enter)</button>
-                                <p class="result-item-txt"
-                                        {% if saved_report == 'no' %}
-                                            contenteditable="true"
-                                        {% endif %}
-                                   style="float: none; white-space: pre-line;">{{ item.item_result }}</p>
-                                {% if saved_report == 'no' %}
-                                    <span><small><i><b>Исполнитель -</b> {{ item.user_fio }}</i></small></span>
-                                    {% if item.item_comment %}
-                                        <span><small><i><br><b>Комментарии -</b> {{ item.item_comment }}</i>
-                                            </small></span>
+                {% for item in group.items %}
+                    <tr>
+                        <td>
+                            <p class="text-center" style="width:10px; padding-top: 15px;">{{ loop.index }}</p>
+                        </td>
+                        <td class="text-center">
+                            <p style="padding-top: 15px;">{{ item.correct_item_date }}</p>
+                        </td>
+                        <td class="text-center width-100" data-item_id="{{ item.id }}">
+                            <p class="elapsed-item-txt"
+                               data-item_elapsed="{{ item.item_elapsed }}"
+                               style="padding-top: 15px;">{{ item.item_elapsed_hr }} ч. {{ item.item_elapsed_min }}
+                                мин. </p>
+                        </td>
+                        <td data-item_id="{{ item.id }}">
+                            <p class="action-item-txt"
+                                    {% if saved_report == 'no' %}
+                                        contenteditable="true"
                                     {% endif %}
+                               style="float: none; white-space: pre-line;"><b>{{ item.item_action }}</b></p>
+                            <button class="{{ item.id }}" style="display: none">Сохранить (Enter)</button>
+                            <p class="result-item-txt"
+                                    {% if saved_report == 'no' %}
+                                        contenteditable="true"
+                                    {% endif %}
+                               style="float: none; white-space: pre-line;">{{ item.item_result }}</p>
+                            {% if saved_report == 'no' %}
+                                <span><small><i><b>Исполнитель -</b> {{ item.user_fio }}</i></small></span>
+                                {% if item.item_comment %}
+                                    <span><small><i><br><b>Комментарии -</b> {{ item.item_comment }}</i>
+                                        </small></span>
                                 {% endif %}
-                            </td>
-                        </tr>
+                            {% endif %}
+                        </td>
+                    </tr>
                 {% endfor %}
             {% endfor %}
-
-
             </tbody>
         </table>
     </div>
 </div>
 
-
-{#<td>#}
-                        {#<div class="btn-group-vertical">#}
-                            {#<button type="button" class="btn btn-link btn-block btn-wraping my-text-left">#}
-                                    {#<span data-recent_item_id="{{ d.id }}" class="recent-item-txt">#}
-                                        {#<i class="fa fa-edit fa-lg"></i>#}
-                                    {#</span>#}
-                            {#</button>#}
-                            {#<button type="button" class="btn btn-link btn-block btn-wraping my-text-left">#}
-                                    {#<span data-recent_item_id="{{ d.id }}" class="recent-item-delete">#}
-                                        {#<i class="fa fa-trash-o fa-lg"></i>#}
-                                    {#</span>#}
-                            {#</button>#}
-                        {#</div>#}
-                    {#</td>#}

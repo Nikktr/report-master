@@ -19,6 +19,7 @@
         <table class="table table-condensed table-hover table-striped v-space-10">
             <thead>
             <tr>
+                <th>##</th>
                 <th>Название отчета</th>
                 <th>Дата создания</th>
                 <th>Скачать</th>
@@ -28,17 +29,19 @@
             {% for d in reports %}
                 <tr id="{{ d.id }}" class="{% if d.user_id != cur_user %} all-reports{% endif %}">
                     <td>
-                        <button data-report-id="{{ d.id }}" type="button"
-                                class="task_id btn btn-link btn-wraping">{{ d.report_name }}</button>
+                        <p class="text-center" style="width:10px; padding-top: 15px;">{{ loop.index }}</p>
+                    </td>
+                    <td>
+                        <a href="#" data-report-id="{{ d.id }}" class="report_id">{{ d.report_name }}</a>
                         <span><small><i><br>Исполнитель - <b>{{ d.user_fio }}</b></i></small></span>
                         <span><small><i> За период <b>с {{ d.correct_first_day }} по {{ d.correct_last_day }}</b></i></small></span>
                     </td>
                     <td>
-                            {{ d.correct_date }}
+                        {{ d.correct_date }}
                     </td>
                     <td>
                         <a href="/apps/hourly-reports/reports/{{ d.excel_file }}" class="btn btn-xs btn-warning">Скачать Excel</a>
-                        <a href="/apps/hourly-reports/reports/{{ d.pdf_file }}" class="btn btn-xs btn-warning">Скачать Pdf</a>
+                        {#<a href="/apps/hourly-reports/reports/{{ d.pdf_file }}" class="btn btn-xs btn-warning">Скачать Pdf</a>#}
                     </td>
                 </tr>
             {% endfor %}

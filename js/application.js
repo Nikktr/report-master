@@ -453,7 +453,7 @@ $(document).ready(function () {
         var $button = $(this);
         var itemId = '';
         var itemVal = '';
-        var operationCmd = {operation: 'deleteItem'}; // Команда - название метода php
+        var operationCmd = {operation: 'deleteItem'}; // Команда - название метода  php
 
         if ($button[0].id == 'rep_item_btn_delete') {
             itemId = {rep_item_id: $("#edit_report_form").attr("data-rep_item_id")}; // Получаем id записи из формы

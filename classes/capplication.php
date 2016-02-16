@@ -639,7 +639,7 @@ class CApplication
                 'show_download_btn' => 'yes',
                 'saved_report' => 'yes',
                 'xlsxFile' => $reportItem['excel_file'],
-                'pdfFile' => $reportItem['pdf_file'],
+                //'pdfFile' => $reportItem['pdf_file'],
                 'fDay' => date('d-m-Y', strtotime($reportItem['first_day'])),
                 'lDay' => date('d-m-Y', strtotime($reportItem['last_day'])),
             ));
@@ -701,22 +701,21 @@ class CApplication
             $id = $this->obDb->getOne($sql, $data);// возвращем id записи для вставки в атрибут формы редактирования записи
 
             $arReportParams['excel_file'] = "{$this->obB24->arCurrentB24User['id']}/{$id}_{$translitReportName}.xlsx";
-            $arReportParams['pdf_file'] = "{$this->obB24->arCurrentB24User['id']}/{$id}_{$translitReportName}.pdf";
+            //$arReportParams['pdf_file'] = "{$this->obB24->arCurrentB24User['id']}/{$id}_{$translitReportName}.pdf";
 
-            $sql = "UPDATE rm_reports SET excel_file = '" . $arReportParams['excel_file'] . "', pdf_file = '" .
-                        $arReportParams['pdf_file'] . "' WHERE id={$id}";
+//            $sql = "UPDATE rm_reports SET excel_file = '" . $arReportParams['excel_file'] . "', pdf_file = '" .
+//                        $arReportParams['pdf_file'] . "' WHERE id={$id}";
+            $sql = "UPDATE rm_reports SET excel_file = '" . $arReportParams['excel_file'] . "' WHERE id={$id}";
             $this->obDb->query($sql);
 
             // Создаем Xlxs и Pdf файлы
-            $pdfFile = '';
-            $xlsxFile = '';
             $this->createXlsxPdf($id, $arReportParams);
 
             $ajax_answer = array(
                 'status' => 'success',
                 'result' => $id,
                 'msg' => 'Отчет успешно сохранен',
-                'reload_html' => $this->showReportById($id, $pdfFile, $xlsxFile)['reload_html'],
+                'reload_html' => $this->showReportById($id)['reload_html'],
             );
             return $ajax_answer;
         } catch (Exception $e) {
@@ -756,7 +755,6 @@ class CApplication
     public function createXlsxPdf($reportId, $arReportParams){
         $templFile = 'template-2.xlsx';
         $xlsxOutputFileName = $arReportParams['excel_file'];
-        $pdfOutputFileName = $arReportParams['pdf_file'];;
         $row = 15;  // первая строка таблицы данных
 
         // Инициализация PHPExcel
@@ -765,19 +763,6 @@ class CApplication
         $locale = 'ru_ru';                      // Локаль русская
         PHPExcel_Settings::setLocale($locale);  // устанавливаем локаль
         $sheet = $objPHPExcel->getActiveSheet();  // устанавливаем активный лист
-
-        // Инициализация PDF Creator
-        $rendererName = PHPExcel_Settings::PDF_RENDERER_MPDF;
-        $rendererLibrary = 'mpdf';  // Папка с библиотекой
-        $rendererLibraryPath = $_SERVER['DOCUMENT_ROOT'] . '/apps/vendor/appotter/' . $rendererLibrary;
-        if (!PHPExcel_Settings::setPdfRenderer(
-            $rendererName,
-            $rendererLibraryPath
-        )
-        ) {
-            die('Please set the $rendererName and $rendererLibraryPath values' .
-                PHP_EOL . ' as appropriate for your directory structure');
-        }
 
         // Дополняем массив с данными по отчету данными по объекту отчета
         //  и сортированным и группированным массивом записей
@@ -841,16 +826,29 @@ class CApplication
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save("reports/{$xlsxOutputFileName}");  // Записываем в файл
 
-        // Создание PDF и запись в файл
-        $objWriter = new PHPExcel_Writer_PDF($objPHPExcel);
-        $objWriter->save("reports/{$pdfOutputFileName}");
+//        //Инициализация PDF Creator
+//        $pdfOutputFileName = $arReportParams['pdf_file'];
+//        $rendererName = PHPExcel_Settings::PDF_RENDERER_MPDF;
+//        $rendererLibrary = 'mpdf';  // Папка с библиотекой
+//        $rendererLibraryPath = $_SERVER['DOCUMENT_ROOT'] . '/apps/vendor/appotter/' . $rendererLibrary;
+//        if (!PHPExcel_Settings::setPdfRenderer(
+//            $rendererName,
+//            $rendererLibraryPath
+//        )
+//        ) {
+//            die('Please set the $rendererName and $rendererLibraryPath values' .
+//                PHP_EOL . ' as appropriate for your directory structure');
+//        }
 
+//        // Создание PDF и запись в файл
+//        $objWriter = new PHPExcel_Writer_PDF($objPHPExcel);
+//        $objWriter->save("reports/{$pdfOutputFileName}");
 
-        // Вызов родного PDF creator для примера
-        // Saves file on the server as 'filename.pdf'
-        //$mpdf = new mPDF();
-        //$mpdf->WriteHTML($html);
-        //$mpdf->Output('filename.pdf', 'F');
+//        //Вызов родного PDF creator для примера
+//        //Saves file on the server as 'filename.pdf'
+//        $mpdf = new mPDF();
+//        $mpdf->WriteHTML($html);
+//        $mpdf->Output('filename.pdf', 'F');
     }
 
     /**
