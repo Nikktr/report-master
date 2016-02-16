@@ -1,0 +1,48 @@
+<div class="clearfix"></div>
+<div class="panel panel-default v-space-5">
+    <div class="panel-heading">
+        <h3 class="panel-title elem-inline"><b>Выберите доверителя</b></h3>
+    </div>
+    <div class="panel-body">
+        <div class="btn-group v-bot-space-15" >
+            <button type="button" id="contact_btn_fiz" class="btn btn-default ">Физические лица</button>
+            <button type="button" id="contact_btn_company" class="btn btn-default ">Юридические лица</button>
+        </div>
+        <table class="table table-condensed table-hover table-striped">
+            <tbody>
+            {% set ar_length = contacts_data|length %}
+            {% set half_length = (ar_length // 2) + 1 %}
+            {% for d in contacts_data|slice(0, half_length ) %}
+                <tr class="">
+                    {% if fiz == 1 %}
+                        <td>
+                            <button data-contact-id="{{ d.UF_ID }}" type="button"
+                                    class="contact_id btn btn-link ">
+                                {{ d.LAST_NAME }}&nbsp;{{ d.NAME }}&nbsp;{{ d.SECOND_NAME }}
+                            </button>
+                        </td>
+                        <td>
+                            <button data-group-id="{{ d.UF_ID }}" type="button" class="contact_id btn btn-link ">
+                                {{ contacts_data[loop.index0 + half_length].LAST_NAME }}
+                                &nbsp;{{ contacts_data[loop.index0 + half_length].NAME }}
+                                &nbsp;{{ contacts_data[loop.index0 + half_length].SECOND_NAME }}
+                            </button>
+                        </td>
+                    {% else %}
+                        <td>
+                            <button data-contact-id="{{ d.UF_ID }}" type="button" class="contact_id btn btn-link ">
+                                {{ d.TITLE }}
+                            </button>
+                        </td>
+                        <td>
+                            <button data-group-id="{{ d.UF_ID }}" type="button" class="contact_id btn btn-link ">
+                                {{ contacts_data[loop.index0 + half_length].TITLE }}
+                            </button>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

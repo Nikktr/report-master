@@ -1,0 +1,36 @@
+<div class="clearfix"></div>
+<div class="panel panel-default v-space-5">
+    <div class="panel-heading">
+        <h3 class="panel-title elem-inline"><b>Выберите группу</b></h3>
+    </div>
+    <div class="panel-body">
+        <table class="table table-condensed table-hover table-striped v-space-10">
+            {#<thead>#}
+            {#<tr>#}
+                {#<th>##</th>#}
+                {#<th>Название группы</th>#}
+            {#</tr>#}
+            {#</thead>#}
+            <tbody>
+            {% set ar_length = groups_data|length %}
+            {% set half_length = (ar_length // 2) + 1 %}
+            {% for d in groups_data|slice(0, half_length ) %}
+                <tr class="">
+                    <td>
+                        <button data-group-id="{{ d.ID }}" type="button"
+                                class="group_id btn btn-link ">
+                            {{ d.NAME }}
+                        </button>
+                    </td>
+                    <td>
+                        <button data-group-id="{{ d.ID }}" type="button"
+                                class="group_id btn btn-link ">
+                            {{ groups_data[loop.index0 + half_length].NAME }}
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,97 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title"><b>Построитель отчета по доверителю</b></h3>
+    </div>
+    <div class="panel-body panel-bg">
+        <form id="boc_build_form" >
+            <div class="form-group v-space-5">
+                <div class="col-xs-2 v-space-5">
+                    <label for="boc_report_name" class="control-label elem-inline">Название отчета</label>
+                </div>
+                <div class="col-xs-10">
+                    <input type="text" class="form-control" id="boc_report_name" placeholder="Название отчета"/>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+            <div class="col-xs-2 v-space-10">
+                <a href="#" class="dashed-link" id="boc_select_client"><b>Доверитель <i class="fa fa-caret-down "></i></b></a>
+            </div>
+            <div class="col-xs-10">
+                <p class="v-space-10"><b><span data-boc_object_id="" id="boc_object_name">--</span></b></p>
+            </div>
+
+            <div class="clearfix"></div>
+            <div class="form-group v-space-10">
+                <label for="boc_report_for" class="control-label col-xs-2 v-space-5">Тип отчета:</label>
+                <div class="col-xs-3">
+                    <select id="boc_report_for" class="form-control">
+                        <option value="client">Для доверителя</option>
+                        <option value="management">Для руководства</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+            <div class="form-group v-space-10">
+                <label for="boc_report_period" class="control-label col-xs-2 v-space-5">За период:</label>
+                <div class="col-xs-3">
+                    <select id="boc_report_period" class="form-control">
+                        <option value="curWeek">Текущая неделя</option>
+                        <option value="prevWeek">Предыдущая неделя</option>
+                        <option value="curMonth">Текущий месяц</option>
+                        <option value="prevMonth">Предыдущий месяц</option>
+                        <option value="range">Указать период</option>
+                    </select>
+                </div>
+                <div class="form-group col-xs-7">
+                    <label for="boc_fday" class="control-label elem-inline">с: </label>
+                    <input type="date" class="form-control elem-inline width-150" id="boc_fday" value="{{ fday }}">
+                    <label for="boc_lday" class="control-label elem-inline">по: </label>
+                    <input type="date" class="form-control elem-inline width-150" id="boc_lday" value="{{ lday }}">
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+            <div class="form-group v-space-5">
+                <div class="col-xs-2">
+                    <label for="boc_cost_hour" class="control-label elem-inline">Стоимость часа:</label>
+                </div>
+                <div class="col-xs-1">
+                    <input type="text" class="form-control elem-inline width-70" id="boc_cost_hour" placeholder="">
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="form-group form-inline col-xs-4 v-space-10">
+                    <fieldset {% if is_admin == 0 %} disabled {% endif %}>
+                        <div class="col-xs-6">
+                            <label class="control-label">Включать в отчет:</label>
+                        </div>
+                        <div class="col-xs-6">
+                            <label class="radio-inline">
+                                <input type="radio" id="boc_include_my"
+                                       value="my" name="include_coworker" checked> Мои записи</label>
+                            <label class="radio-inline" style="margin-left: 0;">
+                                <input type="radio" id="boc_include_all_items"
+                                       value="all" name="include_coworker"> Все записи</label>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+            <div class="col-xs-10 v-space-15">
+                <button type="button" id="boc_build_report" class="btn btn-warning" disabled="disabled">
+                    Построить отчет
+                </button>
+                <button type="button" id="boc_save_report" class="btn btn-warning" disabled="disabled">
+                    Сохранить отчет
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+

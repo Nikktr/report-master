@@ -1,0 +1,52 @@
+<div class="clearfix"></div>
+<div class="panel panel-default v-space-5">
+    <div class="panel-heading">
+        <h3 class="panel-title elem-inline"><b>Управление отчетами</b></h3>
+    </div>
+    <div class="panel-body">
+        <div class="btn-group" style="float: left;">
+            <button type="button" id="report_btn_curmonth" class="btn btn-default ">Текущий месяц</button>
+            <button type="button" id="report_btn_prevmonth" class="btn btn-default ">Предыдущий месяц</button>
+            {#<button type="button" id="task_btn_delegate" class="btn btn-default ">Поручил</button>#}
+            {#<button type="button" id="task_btn_audit" class="btn btn-default ">Наблюдаю</button>#}
+            <button type="button" id="report_btn_all" class="btn btn-default ">Все</button>
+        </div>
+        <div class="h-space-15" style="float: left;">
+            <label class="checkbox-inline v-space-5">
+                <input type="checkbox" id="show_all_reports"> Показать отчеты ВСЕХ сотрудников
+            </label>
+        </div>
+        <table class="table table-condensed table-hover table-striped v-space-10">
+            <thead>
+            <tr>
+                <th>Название отчета</th>
+                <th>Дата создания</th>
+                <th>Скачать</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for d in reports %}
+                <tr id="{{ d.id }}" class="{% if d.user_id != cur_user %} all-reports{% endif %}">
+                    <td>
+                        <button data-report-id="{{ d.id }}" type="button"
+                                class="task_id btn btn-link btn-wraping">{{ d.report_name }}</button>
+                        <span><small><i><br>Исполнитель - <b>{{ d.user_fio }}</b></i></small></span>
+                        <span><small><i> За период <b>с {{ d.correct_first_day }} по {{ d.correct_last_day }}</b></i></small></span>
+                    </td>
+                    <td>
+                            {{ d.correct_date }}
+                    </td>
+                    <td>
+                        <a href="/apps/hourly-reports/reports/{{ d.excel_file }}" class="btn btn-xs btn-warning">Скачать Excel</a>
+                        <a href="/apps/hourly-reports/reports/{{ d.pdf_file }}" class="btn btn-xs btn-warning">Скачать Pdf</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+

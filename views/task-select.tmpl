@@ -1,0 +1,57 @@
+<div class="clearfix"></div>
+<div class="panel panel-default v-space-5">
+	<div class="panel-heading">
+		<h3 class="panel-title elem-inline"><b>Выберите задачу</b></h3>
+	</div>
+	<div class="panel-body">
+		<div class="btn-group" style="float: left;">
+			<button type="button" id="task_btn_do" class="btn btn-default ">Делаю</button>
+			<button type="button" id="task_btn_accomp" class="btn btn-default ">Помогаю</button>
+			<button type="button" id="task_btn_delegate" class="btn btn-default ">Поручил</button>
+			<button type="button" id="task_btn_audit" class="btn btn-default ">Наблюдаю</button>
+            <!-- <button type="button" id="task_btn_all" class="btn btn-default ">Все</button> -->
+		</div>
+        <div class="h-space-15" style="float: left;">
+            <label class="checkbox-inline v-space-5">
+                <input type="checkbox" id="show_canceled" > Показывать "завершенные"
+            </label>
+        </div>
+		<table class="table table-condensed table-hover table-striped v-space-10">
+			<thead>
+			<tr>
+				<th>##</th>
+				<th>Название задачи</th>
+				<th>Дата завершения</th>
+				<th></th>
+			</tr>
+			</thead>
+			<tbody>
+			{% for d in tasks_data %}
+				<tr class="{% if d.REAL_STATUS == 5 %} task-canceled{% endif %}">
+					<td>
+                        <p class="v-space-10">{{ d.ID }}</p>
+                    </td>
+					<td>
+                        <button data-task-id="{{ d.ID }}" type="button"
+                                class="task_id btn btn-link {% if d.REAL_STATUS == 5 %} task-canceled{% endif %}">
+                            {{ d.TITLE }}
+                        </button>
+                    </td>
+					<td>
+                        {% if d.DEADLINE %}
+                            {{ d.DEADLINE|date("m-d-Y") }}
+                        {% else %}
+                            --
+                        {% endif %}
+                    </td>
+					<td></td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+
+
+

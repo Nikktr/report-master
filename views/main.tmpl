@@ -1,0 +1,41 @@
+{% include 'header.tmpl' %}
+
+<div id="top" class="container-fluid">
+
+    {#-----------загрузка модалей----------------------#}
+    {#{% include 'default-modal.tmpl' %}#}
+    {% include 'colored-modal-set.tmpl' %}
+
+    {# ------- Главное навигационное меню ------------ #}
+    <div id="navbar">
+        {% include'nav-bar.tmpl' %}
+    </div>
+
+    {# ------- Начальный экран ------------ #}
+    <div id="main_gui">
+        {# ------- Форма редактирования записи ------------ #}
+        <div id="edit_report_item">
+            {% include 'edit-report-item.tmpl' %}
+        </div>
+        {# ------- Список Недавние записи------------ #}
+        <div id="recent_items">
+            {% include 'show-recent-rep-item.tmpl' %}
+        </div>
+    </div>
+
+    {#--- Блок для вывода html Аяксом. ВСЕ блоки пунктов Главного меню ----------------------#}
+    <div id="sub_gui">
+    </div>
+
+    {#--- Блок для вывода html Аяксом. ВСЕ блоки ВЫБОРА чего нибудь ----------------------#}
+    <div id="loaded_html_1">
+    </div>
+
+    {#--- Блок для вывода html Аяксом  ----------------------#}
+    <div id="loaded_html_2">
+    </div>
+
+
+</div>
+
+{% include 'footer.tmpl' %}

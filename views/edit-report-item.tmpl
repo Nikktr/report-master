@@ -1,0 +1,68 @@
+<div class="panel panel-default">
+	<div class="panel-heading">
+        <h3 class="panel-title"><b>Создание/редактирование строки отчета</b></h3>
+    </div>
+
+	<div class="panel-body panel-bg">
+		<form id="edit_report_form" data-rep_item_id="" role="form">
+			<div class="form-group ">
+				<div class="col-xs-3">
+				<label for="rep_item_date" class="control-label elem-inline">Дата </label>
+				<input type="date" class="form-control elem-inline width-150" id="rep_item_date" name="rep_item_date" value="{{ today }}" placeholder="">
+				</div>
+			</div>
+			<div class="form-group ">
+				<div class="col-xs-5">
+					<label for="rep_item_elapsed" class="control-label elem-inline">Затраченное время</label>
+					<input type="number" step="1" min="0" max="20" class="form-control elem-inline width-60"
+						   id="rep_item_elapsed_hr" placeholder="" value="0">
+					<span>ч.</span>
+					<input type="number" step="15" min="-15" max="60" class="form-control elem-inline width-60"
+						   id="rep_item_elapsed_min" placeholder="" value="0">
+					<span>мин.</span>
+				</div>
+			</div>
+
+			<div class="clearfix "> </div>
+
+			<div class="form-group v-space-5">
+				<div class="col-xs-12">
+				<label for="rep_item_action" class="control-label elem-block">Произведенные действия</label>
+				<textarea rows="2" class="form-control" id="rep_item_action" placeholder=""></textarea>
+				</div>
+			</div>
+			<div class="clearfix"></div>
+			<div class="form-group v-space-5">
+				<div class="col-xs-12">
+				<label for="rep_item_result" class="control-label elem-block">Результат</label>
+				<textarea rows="4" class="form-control" id="rep_item_result" placeholder=""></textarea>
+				</div>
+			</div>
+			<div class="clearfix"></div>
+			<div class="form-group v-space-5">
+				<div class="col-xs-12">
+					<label for="rep_item_comment" class="control-label elem-block">Комментарий</label>
+					<textarea rows="1" class="form-control" id="rep_item_comment" placeholder=""></textarea>
+				</div>
+			</div>
+		</form>
+
+		<div class="clearfix"></div>
+		<div class="col-xs-12" style="padding: 10px 0px 25px 15px;">
+			<p><b>Связано с:</b></p>
+			<p><a href="#" id="rep_item_btn_task" class="dashed-link">Задача:</a>
+				<b><span rep_item_task_id="" id="rep_item_task_name"></span></b></p>
+			<p><a href="#" id="rep_item_btn_client" class="dashed-link">Доверитель:</a>
+				<b><span rep_item_client_id="" id="rep_item_client_name"></span></b></p>
+			<p><a href="#" id="rep_item_btn_group" class="dashed-link">Группа:</a>
+				<b><span rep_item_group_id="" id="rep_item_group_name"></span></b></p>
+		</div>
+
+		<div class="col-xs-10">
+			<button type="button" id="rep_item_btn_save" class="btn btn-warning" disabled="disabled">Сохранить</button>
+			<button type="button" id="rep_item_btn_save_crt" class="btn btn-warning" disabled="disabled" >Сохранить и создать новую</button>
+			<button type="button" id="rep_item_btn_delete" class="btn btn-danger" disabled="disabled" >Удалить</button>
+		</div>
+	</div>
+
+</div>
