@@ -20,7 +20,7 @@ if (!empty($_REQUEST)) {
        $obApp->getItems($arDate['last_week_monday'], $arDate['today']); //todo Вынести Первый и Последний день в Tools
        $obApp->draw_main_UI();
 
-      // echo "<pre>" . var_export($arDate) . "</pre>";
+      // echo "<pre>" . var_export($arDate) . "</pre>"; // Вывод отладочной инфы
    }
 }
 
