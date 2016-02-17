@@ -1234,6 +1234,34 @@ class CApplication
         return $ajax_answer;
     }
 
+    public function sortTaskByGroup()
+    {
+        $sortedItems = array();
+        $this->obB24->getGroups();
+
+        // сортировка и группировка массива Задвч по Группам -> $sortedItems
+        foreach ($this->obB24->arB24Tasks as $key => $value) {
+            $taskGroupId = $value['GROUP_ID'];
+
+            // Ищем название Группы в массиве Групп
+            $groupName = '';
+            foreach ($this->obB24->arB24Groups as $index => $group) {
+                if ($group['ID'] == $taskGroupId) {
+                    $groupName = $group['NAME'];
+                    break;
+                }
+            }
+
+            if ($groupName == '') {
+                $sortedItems[0][] = $value;   // Задача не привязана к Группе
+            }
+            else {
+                $sortedItems[$groupName][] = $value;
+            }
+        }
+        return $sortedItems;
+    }
+
     public function getTaskData() {
 
         if ($_POST['taskId'] && is_numeric($_POST['taskId'])) {
@@ -1287,7 +1315,7 @@ class CApplication
         $this->obB24->getTasksDo();
         $template = $this->obTwig->loadTemplate('task-select.tmpl');
         $reload_html = $template->render(array(
-            'tasks_data' => $this->obB24->arB24Tasks,
+            'tasks_data' => $this->sortTaskByGroup(),
         ));
         $ajax_answer = array(
             'status' => 'success',
@@ -1303,7 +1331,7 @@ class CApplication
         $this->obB24->getTasksAccomp();
         $template = $this->obTwig->loadTemplate('task-select.tmpl');
         $reload_html = $template->render(array(
-            'tasks_data' => $this->obB24->arB24Tasks,
+            'tasks_data' => $this->sortTaskByGroup(),
         ));
         $ajax_answer = array(
             'status' => 'success',
@@ -1319,7 +1347,7 @@ class CApplication
         $this->obB24->getTasksDelegate();
         $template = $this->obTwig->loadTemplate('task-select.tmpl');
         $reload_html = $template->render(array(
-            'tasks_data' => $this->obB24->arB24Tasks,
+            'tasks_data' => $this->sortTaskByGroup(),
         ));
         $ajax_answer = array(
             'status' => 'success',
@@ -1335,7 +1363,7 @@ class CApplication
         $this->obB24->getTasksAudit();
         $template = $this->obTwig->loadTemplate('task-select.tmpl');
         $reload_html = $template->render(array(
-            'tasks_data' => $this->obB24->arB24Tasks,
+            'tasks_data' => $this->sortTaskByGroup(),
         ));
         $ajax_answer = array(
             'status' => 'success',

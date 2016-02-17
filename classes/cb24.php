@@ -120,11 +120,26 @@ class CB24
         $FILTER = array(
             'RESPONSIBLE_ID' => $this->arCurrentB24User['id'],
         );
-        $TASKDATA = array(
-           'TITLE', 'DEADLINE', 'GROUP_ID', 'CREATED_BY', 'CREATED_BY_LAST_NAME', 'CREATED_BY_NAME',
-           'FORUM_ID', 'FORUM_TOPIC_ID', 'REAL_STATUS',
+        $SELECT = array(
+            'TITLE', 'DEADLINE', 'GROUP_ID', 'CREATED_BY', 'CREATED_BY_LAST_NAME', 'CREATED_BY_NAME',
+            'FORUM_ID', 'FORUM_TOPIC_ID', 'REAL_STATUS',
         );
-        $this->arB24Tasks = $obB24Tasks->getList($ORDER, $FILTER, $TASKDATA)['result'];
+        $nPageSize = 50;
+        $iNumPage = 1;
+        $NAV_PARAMS = array(
+            "nPageSize" => $nPageSize,
+            'iNumPage' => $iNumPage
+        );
+        $this->arB24Tasks = array();
+        do {
+            $taskList = $obB24Tasks->getList($ORDER, $FILTER, $SELECT, $NAV_PARAMS);
+            $this->arB24Tasks = array_merge($this->arB24Tasks, $taskList['result']);
+            $iNumPage++;
+            $NAV_PARAMS = array(
+                "nPageSize" => $nPageSize,
+                'iNumPage' => $iNumPage,
+            );
+        } while ($taskList['next']);
     }
 
     public function getTasksAccomp()
@@ -136,11 +151,26 @@ class CB24
         $FILTER = array(
             'ACCOMPLICE' => $this->arCurrentB24User['id'],
         );
-        $TASKDATA = array(
+        $SELECT = array(
             'TITLE', 'DEADLINE', 'GROUP_ID', 'CREATED_BY', 'CREATED_BY_LAST_NAME', 'CREATED_BY_NAME',
             'FORUM_ID', 'FORUM_TOPIC_ID', 'REAL_STATUS',
         );
-        $this->arB24Tasks = $obB24Tasks->getList($ORDER, $FILTER, $TASKDATA)['result'];
+        $nPageSize = 50;
+        $iNumPage = 1;
+        $NAV_PARAMS = array(
+            "nPageSize" => $nPageSize,
+            'iNumPage' => $iNumPage
+        );
+        $this->arB24Tasks = array();
+        do {
+            $taskList = $obB24Tasks->getList($ORDER, $FILTER, $SELECT, $NAV_PARAMS);
+            $this->arB24Tasks = array_merge($this->arB24Tasks, $taskList['result']);
+            $iNumPage++;
+            $NAV_PARAMS = array(
+                "nPageSize" => $nPageSize,
+                'iNumPage' => $iNumPage,
+            );
+        } while ($taskList['next']);
     }
 
     public function getTasksDelegate()
@@ -152,11 +182,26 @@ class CB24
         $FILTER = array(
             'CREATED_BY' => $this->arCurrentB24User['id'],
         );
-        $TASKDATA = array(
+        $SELECT = array(
             'TITLE', 'DEADLINE', 'GROUP_ID', 'CREATED_BY', 'CREATED_BY_LAST_NAME', 'CREATED_BY_NAME',
             'FORUM_ID', 'FORUM_TOPIC_ID', 'REAL_STATUS',
         );
-        $this->arB24Tasks = $obB24Tasks->getList($ORDER, $FILTER, $TASKDATA)['result'];
+        $nPageSize = 50;
+        $iNumPage = 1;
+        $NAV_PARAMS = array(
+            "nPageSize" => $nPageSize,
+            'iNumPage' => $iNumPage
+        );
+        $this->arB24Tasks = array();
+        do {
+            $taskList = $obB24Tasks->getList($ORDER, $FILTER, $SELECT, $NAV_PARAMS);
+            $this->arB24Tasks = array_merge($this->arB24Tasks, $taskList['result']);
+            $iNumPage++;
+            $NAV_PARAMS = array(
+                "nPageSize" => $nPageSize,
+                'iNumPage' => $iNumPage,
+            );
+        } while ($taskList['next']);
     }
 
     public function getTasksAudit()
@@ -168,11 +213,26 @@ class CB24
         $FILTER = array(
             'AUDITOR' => $this->arCurrentB24User['id'],
         );
-        $TASKDATA = array(
+        $SELECT = array(
             'TITLE', 'DEADLINE', 'GROUP_ID', 'CREATED_BY', 'CREATED_BY_LAST_NAME', 'CREATED_BY_NAME',
             'FORUM_ID', 'FORUM_TOPIC_ID', 'REAL_STATUS',
         );
-        $this->arB24Tasks = $obB24Tasks->getList($ORDER, $FILTER, $TASKDATA)['result'];
+        $nPageSize = 50;
+        $iNumPage = 1;
+        $NAV_PARAMS = array(
+            "nPageSize" => $nPageSize,
+            'iNumPage' => $iNumPage
+        );
+        $this->arB24Tasks = array();
+        do {
+            $taskList = $obB24Tasks->getList($ORDER, $FILTER, $SELECT, $NAV_PARAMS);
+            $this->arB24Tasks = array_merge($this->arB24Tasks, $taskList['result']);
+            $iNumPage++;
+            $NAV_PARAMS = array(
+                "nPageSize" => $nPageSize,
+                'iNumPage' => $iNumPage,
+            );
+        } while  ($taskList['next']);
     }
 
     public function getGroups()
