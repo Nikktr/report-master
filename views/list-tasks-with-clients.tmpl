@@ -1,0 +1,68 @@
+<div class="clearfix"></div>
+<div class="panel panel-default v-space-5">
+    <div class="panel-heading">
+        <h3 class="panel-title elem-inline"><b>Таблица сопоставления Задач и Доверителей. Задач в кеше- {{ num_tasks }}. Обновлен кеш - {{ num_cached }}</b></h3>
+    </div>
+    <div class="panel-body">
+        <table class="table table-condensed table-hover table-striped v-space-10">
+            <thead>
+            <tr>
+                <th>##</th>
+                <th>Название задачи</th>
+                <th>Дата завершения</th>
+                <th>Постановщик</th>
+                <th>Доверитель</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for key, tasks in tasks_data %}
+
+                <tr style="background-color: #ffffff">
+                    <td colspan="5"></td>
+                </tr>
+                {% if key != '0' %}
+                    <tr style="background-color: #D3E0E3">
+                        <td colspan="5"><b>{{ key }}</b></td>
+                    </tr>
+                {% else %}
+                    <tr style="background-color: #D3E0E3">
+                        <td colspan="5"><b>Без группы</b></td>
+                    </tr>
+                {% endif %}
+
+                {% for task in tasks %}
+                    <tr class="{% if task.REAL_STATUS == 5 %} task-canceled{% endif %}">
+                        <td>
+                            <p class="v-space-10">{{ task.ID }}</p>
+                        </td>
+                        <td style="width: 400px;">
+                            <a href="https://mka-arbat.bitrix24.ru/company/personal/user/2/tasks/task/view/{{ task.ID }}/"
+                               data-task-id="{{ task.ID }}" target="_blank"
+                               class="task_id {% if task.REAL_STATUS == 5 %} task-canceled{% endif %}">{{ task.TITLE }}</a>
+                        </td>
+                        <td>
+                            <span>
+                            {% if task.DEADLINE %}
+                                {{ task.DEADLINE|date("m-d-Y") }}
+                            {% else %}
+                                --
+                            {% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <span>
+                                {{ task.CREATED_BY_LAST_NAME }} {{ task.CREATED_BY_NAME }}
+                            </span>
+                        </td>
+                        <td>
+                            <span>
+                                {{ task.clientName }}
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

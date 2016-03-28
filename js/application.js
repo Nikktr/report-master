@@ -8,7 +8,8 @@ var $mainGUI = $('#main_gui');
 var $subGUI = $('#sub_gui');
 var arReportParams;
 var date = new Date();
-var fd = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+//var fd = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+var fd = ('0' + date.getDate()).slice(-2) + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + date.getFullYear();
 var contentOld = {};   //объявляем переменную для хранения исходного текста для функции редактирования в таблице отчета
 var flagNL = false;  // флаг нажатия на клавишу Shift Нужно чтобы по Shift+Enter был перевод строки
 
@@ -160,6 +161,7 @@ function selectClient() {
     $loadedHtml1.css("display", "block");
     $loadedHtml1.off('click', '#contact_btn_company');
     $loadedHtml1.off('click', '#contact_btn_fiz');
+    $('#home a').text('< Назад');
     manageAjax(operationCmd).done(function (answer) { // при успешном выполнении ajax запроса
             $loadedHtml1.html(answer['reload_html']); // Загружаем форму со списком контактов
             $('#contact_btn_fiz').button('toggle'); // Ставим статус Нажата на кнопке ФизЛица
@@ -238,6 +240,8 @@ function selectTask() {
     $loadedHtml1.off('click', '#task_btn_accomp');
     $loadedHtml1.off('click', '#task_btn_delegate');
     $loadedHtml1.off('click', '#task_btn_audit');
+    $loadedHtml1.off('click', '#task_btn_all');
+    $('#home a').text('< Назад');
 
     manageAjax(operationCmd).done(function (answer) { // при успешном выполнении ajax запроса
             $loadedHtml1.html(answer['reload_html']); // Загружаем  список задач Делаю
@@ -281,7 +285,7 @@ function selectTask() {
         document.getElementById('top').scrollIntoView(); // Скрол в начало страницы
         manageAjax(operationCmd).done(function (answer) { // при успешном выполнении ajax запроса
                 $loadedHtml1.html(answer['reload_html']); // обновляем Недавние записи
-                $('#task_btn_do, #task_btn_accomp, #task_btn_delegate, #task_btn_audit').button('reset');
+                $('#task_btn_do, #task_btn_accomp, #task_btn_delegate, #task_btn_audit, #task_btn_all').button('reset');
                 $('#task_btn_do').button('toggle');
                 BX24.fitWindow(); // ресайз iframe под новые данные
         });
@@ -293,7 +297,7 @@ function selectTask() {
         document.getElementById('top').scrollIntoView(); // Скрол в начало страницы
         manageAjax(operationCmd).done(function (answer) { // при успешном выполнении ajax запроса
                 $loadedHtml1.html(answer['reload_html']); // обновляем Недавние записи
-                $('#task_btn_accomp, #task_btn_do, #task_btn_delegate, #task_btn_audit').button('reset');
+                $('#task_btn_accomp, #task_btn_do, #task_btn_delegate, #task_btn_audit, #task_btn_all').button('reset');
                 $('#task_btn_accomp').button('toggle');
                 BX24.fitWindow(); // ресайз iframe под новые данные
         });
@@ -305,7 +309,7 @@ function selectTask() {
         document.getElementById('top').scrollIntoView(); // Скрол в начало страницы
         manageAjax(operationCmd).done(function (answer) { // при успешном выполнении ajax запроса
                 $loadedHtml1.html(answer['reload_html']); // обновляем Недавние записи
-                $('#task_btn_delegate, #task_btn_do, #task_btn_accomp, #task_btn_audit').button('reset');
+                $('#task_btn_delegate, #task_btn_do, #task_btn_accomp, #task_btn_audit, #task_btn_all').button('reset');
                 $('#task_btn_delegate').button('toggle');
                 BX24.fitWindow(); // ресайз iframe под новые данные
         });
@@ -317,9 +321,21 @@ function selectTask() {
         document.getElementById('top').scrollIntoView(); // Скрол в начало страницы
         manageAjax(operationCmd).done(function (answer) { // при успешном выполнении ajax запроса
                 $loadedHtml1.html(answer['reload_html']); // обновляем Недавние записи
-                $('#task_btn_audit, #task_btn_do, #task_btn_accomp, #task_btn_delegate').button('reset');
+                $('#task_btn_audit, #task_btn_do, #task_btn_accomp, #task_btn_delegate, #task_btn_all').button('reset');
                 $('#task_btn_audit').button('toggle');
                 BX24.fitWindow(); // ресайз iframe под новые данные
+        });
+    });
+
+    // Нажатие на кнопку ВСЕ
+    $loadedHtml1.on('click', '#task_btn_all', function () {
+        var operationCmd = {operation: 'getTasksAll'}; // Команда - название метода php
+        document.getElementById('top').scrollIntoView(); // Скрол в начало страницы
+        manageAjax(operationCmd).done(function (answer) { // при успешном выполнении ajax запроса
+            $loadedHtml1.html(answer['reload_html']); // обновляем Недавние записи
+            $('#task_btn_audit, #task_btn_do, #task_btn_accomp, #task_btn_delegate, #task_btn_all').button('reset');
+            $('#task_btn_all').button('toggle');
+            BX24.fitWindow(); // ресайз iframe под новые данные
         });
     });
 
@@ -340,7 +356,14 @@ BX24.ready(function () {
 });
 
 $(document).ready(function () {
-    //todo Сделать кнопки Назад или Отмена в блоках ВЫБОРА
+
+    // Инициализируем виджет jquery DatePicker
+    $("#rep_item_date").datepicker({
+        dateFormat: "dd-mm-yy",
+        monthNames: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
+        dayNamesMin: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"],
+        firstDay: 1,
+    });
 
     // Управляет значениями в поле ввода Затраченного времени
     $('#rep_item_elapsed_min').on('change', function () {
@@ -367,7 +390,8 @@ $(document).ready(function () {
     });
 
     // Загрузка записи в форму редактирования из списка Недавние записи
-    $([$mainGUI[0], $loadedHtml1[0]]).on('click', 'span.recent-item-txt', function () {
+    //$([$mainGUI[0], $loadedHtml1[0]]).on('click', 'span.recent-item-txt', function () {
+    $('#main_gui, #loaded_html_1').on('click', 'span.recent-item-txt', function () {
         var itemId = $(this).attr('data-recent_item_id');
         var operationCmd = {operation: 'getItem', rep_item_id: itemId};
         resetEditForm();
@@ -383,6 +407,19 @@ $(document).ready(function () {
         });
     });
 
+    //Нажатие на кнопку Очистить Доверителя
+    $mainGUI.on('click', '#rep_item_btn_client_clear', function () {
+        $('#rep_item_client_name').html('').attr('rep_item_client_id', '');
+        $(this).css("display", "none");
+    });
+
+    //Нажатие на кнопку Очистить Задачу
+    $mainGUI.on('click', '#rep_item_btn_task_clear', function () {
+        $('#rep_item_task_name').html('').attr('rep_item_task_id', '');
+        $('#rep_item_group_name').html('').attr('rep_item_group_id', '');
+        $(this).css("display", "none");
+    });
+
     //Нажатие на кнопку Привязать Доверителя
     $mainGUI.on('click', '#rep_item_btn_client', function () {
         $mainGUI.css("display", "none");
@@ -394,25 +431,27 @@ $(document).ready(function () {
                 .attr('rep_item_client_id', selectedClient.clientId)
                 .html(selectedClient.clientName);
             $mainGUI.css("display", "block");
+            $('#rep_item_btn_client_clear').css("display", "inline");
+            $('#home a').text('Создать/редактировать запись');
             document.getElementById('top').scrollIntoView(); // Скрол в начало страницы
             BX24.fitWindow(); // ресайз iframe под новые данные
         });
     });
 
     //Нажатие на кнопку Привязать Группу
-    $mainGUI.on('click', '#rep_item_btn_group', function () {
-        $mainGUI.css("display", "none");
-
-        // Грузим форму и ставим event на клик по имени Группы в блоке Выбор Группы
-        selectGroup().done(function (selectedGroup) {
-            $('#rep_item_group_name')
-                .attr('rep_item_group_id', selectedGroup.groupId)
-                .html(selectedGroup.groupName);
-            $mainGUI.css("display", "block");
-            document.getElementById('top').scrollIntoView(); // Скрол в начало страницы
-            BX24.fitWindow(); // ресайз iframe под новые данные
-        });
-    });
+    //$mainGUI.on('click', '#rep_item_btn_group', function () {
+    //    $mainGUI.css("display", "none");
+    //
+    //    // Грузим форму и ставим event на клик по имени Группы в блоке Выбор Группы
+    //    selectGroup().done(function (selectedGroup) {
+    //        $('#rep_item_group_name')
+    //            .attr('rep_item_group_id', selectedGroup.groupId)
+    //            .html(selectedGroup.groupName);
+    //        $mainGUI.css("display", "block");
+    //        document.getElementById('top').scrollIntoView(); // Скрол в начало страницы
+    //        BX24.fitWindow(); // ресайз iframe под новые данные
+    //    });
+    //});
 
     // Нажатие на кнопку Привязать Задачу
     $mainGUI.on('click', '#rep_item_btn_task', function () {
@@ -430,6 +469,8 @@ $(document).ready(function () {
                 .attr('rep_item_group_id', selectedTask.groupId)
                 .html(selectedTask.groupName);
             $mainGUI.css("display", "block");
+            $('#rep_item_btn_task_clear').css("display", "inline");
+            $('#home a').text('Создать/редактировать запись');
             document.getElementById('top').scrollIntoView(); // Скрол в начало страницы
             BX24.fitWindow(); // ресайз iframe под новые данные
         })
@@ -479,6 +520,12 @@ $(document).ready(function () {
         }
     });
 
+    // Нажатие на кнопку Создать новую запись в форме редактирования записи отчета
+    $('#rep_item_btn_new').on('click', function () {
+        resetEditForm();
+        $('#rep_item_btn_save, #rep_item_btn_save_crt').prop('disabled', true);
+    });
+
     // Нажатие на кнопку Сохранить или Сохранить+Создать в форме редактирования записи отчета
     $('#rep_item_btn_save, #rep_item_btn_save_crt').on('click', function () {
         var $button = $(this);
@@ -508,6 +555,7 @@ $(document).ready(function () {
     // NavBar -- Нажатие на Создать/Редактировать
     $('#home').on('click', function () {
         var operationCmd = {operation: 'reloadRecentItems'}; // Команда - название метода php
+        $('#home a').text('Создать/редактировать запись');
         $(this).addClass('active');
         $('#show_items, #settings, #build_report, #manage_reports').removeClass('active');
 
@@ -751,19 +799,138 @@ $(document).ready(function () {
         $loadedHtml2.css("display", "none");
 
         manageAjax(operationCmd).done(function (answer) { // при успешном выполнении ajax запроса
-                $loadedHtml2.html(answer['reload_html']); //
-                $loadedHtml2.css("display", "block");
+            $loadedHtml2.html(answer['reload_html']); //
+            $loadedHtml2.css("display", "block");
+            document.getElementById('top').scrollIntoView(); // Скрол в начало страницы
+            BX24.fitWindow(); // ресайз iframe под новые данные
+            $('#report_btn_curmonth, #report_btn_prevmonth').button('reset');
+            $('#report_btn_curmonth').button('toggle');
+        });
+
+        // Клик на кнопке Выбрать Сотрудника
+        $loadedHtml2.on('click', '#report_select_user', function () {
+            BX24.selectUser(function (worker) {
+                $('#report_user_name')
+                    .attr('data-report_user_id', worker.id)
+                    .html(worker.name);
+                // Устанавливаем состояние Выбрано и запускаем ивент
+                $('#selected_user').prop('checked', true).trigger('change');
+            })
+        });
+
+        // Выбор радиокнопки Показать отчеты
+        $loadedHtml2.on('change', '[name = include_reports]', function (e) {
+            var $btnCurMonth = $('#report_btn_curmonth');
+            var $btnPrevMonth = $('#report_btn_prevmonth');
+            var $userName = $('#report_user_name');
+
+            // Проверяем какая радиокнопка выбрана
+            if (e.currentTarget.id == 'my_reports') {   // Выбор - показать Мои отчеты
+                // Проверяем какая кнопка с диапазоном дат активна - Текущий или Предыдущий месяц
+                if ($btnCurMonth.hasClass('active')) {
+                    $btnCurMonth.trigger('click');  // Запускаем ивент загрузки списка Отчетов текущего месяца
+                }
+                if ($btnPrevMonth.hasClass('active')) {
+                    $btnPrevMonth.trigger('click'); // Запускаем ивент загрузки списка Отчетов предыдущего месяца
+                }
+            } else { // Выбор - показать отчеты Сотрудника
+                // Проверяем выбран ли сотрудник?
+                if ($userName.attr('data-report_user_id') == '') {
+                    // Если не выбран Сотрудник запускаем ивент Выбора сотрудника
+                    // Ивент сам запустит загрузку соответствующего списка отчетов
+                    $('#report_select_user').trigger('click');
+                } else {
+                    // Если выбран Сотрудник, то проверяем за какой диапазон дат загружать список отчетов
+                    // Дальше запускаем ивент и передаем параметры userId и userName чтобы после загрузки списка
+                    // установить активным пункт радио - Отчеты выбранного сотрудника, прописать Id и userName
+                    if ($btnCurMonth.hasClass('active')) {
+                        $btnCurMonth.trigger('click',
+                            [$userName.attr('data-report_user_id'), $userName.text()]);
+                    }
+                    if ($btnPrevMonth.hasClass('active')) {
+                        $btnPrevMonth.trigger('click',
+                                [$userName.attr('data-report_user_id'), $userName.text()]);
+                    }
+                }
+            }
+        });
+
+        // Нажатие на кнопку Текущий месяц
+        $loadedHtml2.on('click', '#report_btn_curmonth', function (e, userId, userName) {
+            // Параметры userId, userName передаются в ивентах Выбрать сотрудника и смене радиокнопки -
+            // Показать отчеты Выбранного сотрудника. Нужно чтобы после перезагрузки списка вернуть обратно
+            // состояние переключателя Показать отчеты
+            var operationCmd = {};
+            if (userId) {  // Если присутствует - передаем на сервер userId для выгрузки отчетов Выбранного сотрудника
+                operationCmd = {
+                    operation: 'getReportList',
+                    reportRange: 'curMonth',
+                    userId: userId
+                };
+            } else { // Если не ввыбран Сотрудник, то грузим отчеты текущего пользователя
+                operationCmd = {operation: 'getReportList', reportRange: 'curMonth'};
+            }
+            manageAjax(operationCmd).done(function (answer) { // при успешном выполнении ajax запроса
+                $loadedHtml2.html(answer['reload_html']); // обновляем Список отчетов
+                $('#report_btn_curmonth, #report_btn_prevmonth').button('reset');
+                $('#report_btn_curmonth').button('toggle'); // Ставим активной кнопку Текущий месяц
+                if (userId && userName) { // Если переданы параметры, то восстанавливаем состояние переключателя
+                    $('#report_user_name')
+                        .attr('data-report_user_id', userId)
+                        .html(userName);
+                    $('#selected_user').prop('checked', true);
+                }
                 document.getElementById('top').scrollIntoView(); // Скрол в начало страницы
                 BX24.fitWindow(); // ресайз iframe под новые данные
+            });
+        });
+
+        // Нажатие на кнопку Предыдущий месяц (коменты см в ивенте Текущий месяц)
+        $loadedHtml2.on('click', '#report_btn_prevmonth', function (e, userId, userName) {
+            var operationCmd = {};
+            if (userId) {
+                operationCmd = {
+                    operation: 'getReportList',
+                    reportRange: 'prevMonth',
+                    userId: userId
+                };
+            } else {
+                operationCmd = {operation: 'getReportList', reportRange: 'prevMonth'};
+            }
+
+            manageAjax(operationCmd).done(function (answer) { // при успешном выполнении ajax запроса
+                $loadedHtml2.html(answer['reload_html']); // обновляем список отчетов
+                $('#report_btn_curmonth, #report_btn_prevmonth').button('reset');
+                $('#report_btn_prevmonth').button('toggle');
+                if (userId && userName) {
+                    $('#report_user_name')
+                        .attr('data-report_user_id', userId)
+                        .html(userName);
+                    $('#selected_user').prop('checked', true);
+                }
+                document.getElementById('top').scrollIntoView(); // Скрол в начало страницы
+                BX24.fitWindow(); // ресайз iframe под новые данные
+            });
         });
     });
 
     // NavBar -- Нажатие на Настройки
     $('#settings').on('click', function () {
-
+        var operationCmd = {operation: 'getTasksAndClientsList'}; // Команда - название метода php
         $(this).addClass('active');
         $('#home, #back, #build_report, #show_items, #manage_reports').removeClass('active');
-
+        $mainGUI.css("display", "none");
+        $loadedHtml1.css("display", "none");
+        $subGUI.css("display", "none");
+        $loadedHtml2.css("display", "none");
+        manageAjax(operationCmd).done(function (answer) { // при успешном выполнении ajax запроса
+            $loadedHtml2.html(answer['reload_html']); //
+            $loadedHtml2.css("display", "block");
+            document.getElementById('top').scrollIntoView(); // Скрол в начало страницы
+            BX24.fitWindow(); // ресайз iframe под новые данные
+            $('#report_btn_curmonth, #report_btn_prevmonth').button('reset');
+            $('#report_btn_curmonth').button('toggle');
+        });
 
     });
 
@@ -774,7 +941,6 @@ $(document).ready(function () {
         var elementId = $(this).parent().attr('data-item_id');
         $("button." + elementId).css("display", "block"); //показываем кнопку "сохранить"
         if (e.keyCode == 27) {
-            console.log($(this));
             e.preventDefault();
             $(this).text(contentOld[elementId + $(this)[0]['className']]);	//возвращаем текст до редактирования
             $("button." + elementId).css("display", "none"); //показываем кнопку "сохранить"
@@ -854,7 +1020,6 @@ $(document).ready(function () {
         BX24.fitWindow(); // ресайз iframe под новые данные
 
         $('td #edited_action').one('blur', function () {
-            console.log(itemElapsed);
             var operationCmd = {operation: 'shortUpdateItem'}; // Команда - название метода php
             var itemData = {
                 'item_elapsed': $(this).val(),

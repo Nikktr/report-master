@@ -12,6 +12,8 @@
         </ul>
     </li>
     <li id="manage_reports" class="" ><a href="#">Управлять отчетами</a></li>
-    <li id="settings" class="disabled navbar-right"><a href="#">Настройки</a></li>
+    {% if is_admin == 1 %}
+        <li id="settings" class="navbar-right"><a href="#">Настройки</a></li>
+    {% endif %}
 </ul>
 

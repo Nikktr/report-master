@@ -4,8 +4,8 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/apps/vendor/phpoffice/phpexcel-1-8-1/
 require_once("tools.php");
 require_once("classes/cb24.php");
 require_once("classes/capplication.php");
-//require_once('b24-sdk-ie-fork/bitrix24entity.php');
-//require_once('b24-sdk-ie-fork/bitrix24batch.php');
+
+global $firstDay, $lastDay, $arDate;
 
 if (!empty($_REQUEST)) {
     $obApp = new CApplication();
@@ -17,7 +17,7 @@ if (!empty($_REQUEST)) {
        header('Expires: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT');
        header("Cache-Control: no-cache, must-revalidate");
        header("Pragma: no-cache");
-       $obApp->getItems($arDate['last_week_monday'], $arDate['today']); //todo Вынести Первый и Последний день в Tools
+       $obApp->getItems($arDate[$obApp->arSettings['firstDay']], $arDate[$obApp->arSettings['lastDay']]);
        $obApp->draw_main_UI();
 
       // echo "<pre>" . var_export($arDate) . "</pre> "; // Вывод отладочной инфы

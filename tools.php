@@ -2,6 +2,8 @@
 require_once("config.php");  // Класс для вывода отладочной инфы в консоль браузера (JS concole.log)
 $debug = 1; // Вывод отладочной инфы в шаблон  1=выводить
 $debugInfo = '';
+$firstDay = $arDate['last_week_monday'];
+$lastDay = $arDate['today'];
 
 $arDate = array(
     'last_month_year' => date('Y', strtotime('now -1 month')),
@@ -140,6 +142,39 @@ function debug()
         }
     }
     $debugInfo .= $debugI."\n\r";
+}
+
+function array_map_recursive($callback, $mixed)
+{
+    if (is_array($mixed) || is_object($mixed)) {
+        $return = is_array($mixed) ? array() : new stdClass;
+        foreach ($mixed as $key => $value) {
+            if (is_array($mixed))
+                $return[call_user_func($callback, $key)] = array_map_recursive($callback, $value);
+            else
+                $return->{call_user_func($callback, $key)} = array_map_recursive($callback, $value);
+        }
+        return $return;
+    } else {
+        return call_user_func($callback, $mixed);
+    }
+}
+
+function mb_json_encode($mixed)
+{
+    $apply = function ($string) {
+        return str_replace(array("\"", "'"), array("\u0022", "\u0027"), utf8_encode($string));
+    };
+    return json_encode(array_map_recursive($apply, $mixed));
+}
+
+function mb_json_decode($string)
+{
+    $apply = function ($string) {
+        return str_replace(array("\u0022", "\u0027"), array("\"", "'"), utf8_decode($string));
+    };
+    $on = json_decode(str_replace("\\\"", "\"", $string), true);
+    return array_map_recursive($apply, $on);
 }
 
 

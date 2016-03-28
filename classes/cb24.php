@@ -111,6 +111,36 @@ class CB24
         return $arTaskDataFull;
     }
 
+    // Возвращает все задачи. Для Админа - возвращает задачи ВСЕХ пользователей
+    public function getAllTasks()
+    {
+        $obB24Tasks = new \Bitrix24\Task\Items($this->arB24App);
+        $ORDER = array(
+            'CREATED_DATE' => 'desc',
+        );
+        $FILTER = array(">ID" => 1);
+        $SELECT = array(
+            'TITLE', 'DEADLINE', 'GROUP_ID', 'CREATED_BY', 'CREATED_BY_LAST_NAME', 'CREATED_BY_NAME', 'REAL_STATUS',
+            'CHANGED_DATE',
+        );
+        $nPageSize = 50;
+        $iNumPage = 1;
+        $NAV_PARAMS = array(
+            "nPageSize" => $nPageSize,
+            'iNumPage' => $iNumPage
+        );
+        $this->arB24Tasks = array();
+        do {
+            $taskList = $obB24Tasks->getList($ORDER, $FILTER, $SELECT, $NAV_PARAMS);
+            $this->arB24Tasks = array_merge($this->arB24Tasks, $taskList['result']);
+            $iNumPage++;
+            $NAV_PARAMS = array(
+                "nPageSize" => $nPageSize,
+                'iNumPage' => $iNumPage,
+            );
+        } while ($taskList['next']);
+    }
+
     public function getTasksDo()
     {
         $obB24Tasks = new \Bitrix24\Task\Items($this->arB24App);
@@ -235,6 +265,20 @@ class CB24
         } while  ($taskList['next']);
     }
 
+    public function getTasksAll ()
+    {
+        $arAllTasks = array();
+        $this->getTasksAccomp();
+        $arAllTasks = array_merge($arAllTasks, $this->arB24Tasks);
+        $this->getTasksAudit();
+        $arAllTasks = array_merge($arAllTasks, $this->arB24Tasks);
+        $this->getTasksDelegate();
+        $arAllTasks = array_merge($arAllTasks, $this->arB24Tasks);
+        $this->getTasksDo();
+        $arAllTasks = array_merge($arAllTasks, $this->arB24Tasks);
+        $this->arB24Tasks = $arAllTasks;
+    }
+
     public function getGroups()
     {
         $obB24Groups = new Bitrix24\Sonet\SonetGroup($this->arB24App);
@@ -242,8 +286,9 @@ class CB24
             'NAME' => 'asc',
         );
         $FILTER = array();
-        $IS_ADMIN = 'Y';
-        $this->arB24Groups = $obB24Groups->Get($ORDER, $FILTER, $IS_ADMIN)['result'];
+       //$IS_ADMIN = 'N';
+        $groups = $obB24Groups->Get($ORDER, $FILTER);
+        $this->arB24Groups = $groups['result'];
     }
 
     public function getContactsCompany()
@@ -278,9 +323,6 @@ class CB24
         }
         return $contactFizData;
     }
-
-
-
 
     public function getContactsFiz()
     {

@@ -8,7 +8,7 @@
 			<div class="form-group ">
 				<div class="col-xs-3">
 				<label for="rep_item_date" class="control-label elem-inline">Дата </label>
-				<input type="date" class="form-control elem-inline width-150" id="rep_item_date" name="rep_item_date" value="{{ today }}" placeholder="">
+				<input type="text" class="form-control elem-inline width-100" id="rep_item_date" name="rep_item_date" value="{{ today }}" placeholder="">
 				</div>
 			</div>
 			<div class="form-group ">
@@ -51,18 +51,20 @@
 		<div class="col-xs-12" style="padding: 10px 0px 25px 15px;">
 			<p><b>Связано с:</b></p>
 			<p><a href="#" id="rep_item_btn_task" class="dashed-link">Задача:</a>
+			<a href="#" id="rep_item_btn_task_clear" style="display: none;"><i class="fa fa-times"></i></a>
 				<b><span rep_item_task_id="" id="rep_item_task_name"></span></b></p>
 			<p><a href="#" id="rep_item_btn_client" class="dashed-link">Доверитель:</a>
+			<a href="#" id="rep_item_btn_client_clear" style="display: none"><i class="fa fa-times"></i></a>
 				<b><span rep_item_client_id="" id="rep_item_client_name"></span></b></p>
-			<p><a href="#" id="rep_item_btn_group" class="dashed-link">Группа:</a>
+			<p><a href="#" id="rep_item_btn_group" class="">Группа:</a>
 				<b><span rep_item_group_id="" id="rep_item_group_name"></span></b></p>
 		</div>
 
 		<div class="col-xs-10">
 			<button type="button" id="rep_item_btn_save" class="btn btn-warning" disabled="disabled">Сохранить</button>
 			<button type="button" id="rep_item_btn_save_crt" class="btn btn-warning" disabled="disabled" >Сохранить и создать новую</button>
-			<button type="button" id="rep_item_btn_delete" class="btn btn-danger" disabled="disabled" >Удалить</button>
+			<button type="button" id="rep_item_btn_new" class="btn btn-warning">Новая запись</button>
+			<button type="button" id="rep_item_btn_delete" class="btn btn-danger" disabled="disabled" >Удалить запись из базы данных</button>
 		</div>
 	</div>
-
 </div>

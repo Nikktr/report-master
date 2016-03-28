@@ -8,6 +8,7 @@ class CApplication
 {
     public $is_ajax_mode = false;
     public $arItems = array();
+    public $arSettings = array();
     public $obB24;  // object class CB24 for access to Bitrix24
     public $obDb;  // object class SafeMySQL to access to MySql
     public $obTwig;  // object to access to Twig - templater
@@ -15,7 +16,7 @@ class CApplication
          'insertItem', 'updateItem', 'deleteItem', 'getItem', 'getTasksDo', 'getTasksAccomp', 'getTasksDelegate',
         'getTasksAudit', 'getGroups', 'getContactsFiz', 'getContactsCompany', 'showAllItems', 'reloadRecentItems',
         'getClientReportForm', 'buildReport', 'shortUpdateItem', 'saveReport', 'showReportById', 'getReportList',
-        'getTaskData', 'getWorkerReportForm',
+        'getTaskData', 'getWorkerReportForm', 'getTasksAndClientsList', 'getTasksAll',
     );
 
     public function __construct()
@@ -66,6 +67,10 @@ class CApplication
         // обновляем данные авторизации в Б24 в БД для зарегистрированного пользователя
         $this->obB24->getB24User();
         $this->registerUser();
+
+        // Загрузка настроек приложения из БД (ключ -> значение)
+        $sql = "SELECT rm_key, rm_value FROM rm_settings";
+        $this->arSettings = $this->obDb->getIndCol("rm_key", $sql);
     }
 
 	public function returnJSONResult ($answer) {
@@ -87,18 +92,52 @@ class CApplication
 
         try {
             $template = $this->obTwig->loadTemplate('main.tmpl'); // подгружаем шаблон
-            $num = rand(0, 999999); // Случайное число, добавляется к ссылке на aplication.js чтобы не кешировалось
+            $num = rand(0, 999999); // Случайное число, добавляется к ссылке на application.js чтобы не кешировалось
+            $firstDay = date('d-m-Y', strtotime($arDate[$this->arSettings['firstDay']]));
+            $lastDay = date('d-m-Y', strtotime($arDate[$this->arSettings['lastDay']]));
 
             // передаём в шаблон переменные и значения
             // выводим сформированное содержание
             echo $template->render(array(
                 'num' => $num, // Случайное число чтобы не кешировался application.js?num
-                'today' => $arDate['today'], // Текущая дата для первичной инициации формы ввода строки отчета
+                'today' => date('d-m-Y', strtotime($arDate['today'])), // Текущая дата для первичной инициации формы ввода строки отчета
+                'firstDay' => $arDate[$this->arSettings['firstDay']],
+                'lastDay' => $arDate[$this->arSettings['lastDay']],
                 'data' => $this->arItems,  // Массив данных для заполнения раздела Недавние записи
+                'is_admin' => $this->obB24->arCurrentB24User['is_admin'],
+                'header' => "Последние записи в отчете (с {$firstDay} по {$lastDay})",
             ));
         } catch (Exception $e) {
             die ('ERROR: ' . $e->getMessage());
         }
+    }
+
+    public function getTasksAndClientsList()
+    {
+        try {
+            $num_cached = $this->getAllTasksWithFullData();
+            $arListTasksWithClients = $this->sortTaskByGroup();
+            $template = $this->obTwig->loadTemplate('list-tasks-with-clients.tmpl'); // подгружаем шаблон
+            $reload_html = $template->render(array(
+                'tasks_data' => $arListTasksWithClients,
+                'num_cached' => $num_cached,
+                'num_tasks' => count($this->obB24->arB24Tasks),
+            ));
+            $ajax_answer = array(
+                'status' => 'success',
+                'result' => '',
+                'msg' => '',
+                'reload_html' => $reload_html,
+            );
+        } catch (Exception $e) {
+            $ajax_answer = array(
+                'status' => 'error',
+                'result' => '',
+                'msg' => 'Выборка записей не удалась!<br>Выброшено исключение: <br>' . $e->getMessage() . "<br>",
+                'reload_html' => ''
+            );
+        }
+        return $ajax_answer;
     }
 
     public function registerUser()
@@ -177,7 +216,8 @@ class CApplication
         $table = 'rm_items';
         $where = "WHERE user_id=". $this->obB24->arCurrentB24User['id']." AND item_date >= '".$first_day.
             "' AND item_date <= '".$last_day."' ORDER BY item_date DESC, id DESC";
-        $sql = "SELECT *, DATE_FORMAT(item_date,'%d.%m.%Y') as correct_item_date FROM ?n ?p";
+        $sql = "SELECT *, DATE_FORMAT(item_date,'%d.%m.%Y') as correct_item_date,
+            TRUNCATE(item_elapsed,0) AS item_elapsed_hr, TRUNCATE((item_elapsed - TRUNCATE(item_elapsed,0))*60,0) AS item_elapsed_min FROM ?n ?p";
          try {
              $this->arItems = $this->obDb->getAll($sql, $table, $where);
              return true;
@@ -204,7 +244,6 @@ class CApplication
         if ($_POST['period']){
             $period = $_POST['period'];
         }
-        //todo Добавить обработку периода выборки записей range в HTML форму -> $fDay и $lDay
 
         switch ($period) {
             case 'curWeek':
@@ -254,7 +293,7 @@ class CApplication
         if ($_POST){
             return array(
                 'user_id' => $this->obB24->arCurrentB24User['id'],
-                'item_date' => $_POST['rep_item_date'],
+                'item_date' => date('Y-m-d', strtotime($_POST['rep_item_date'])) ,
                 'item_elapsed' => $_POST['rep_item_elapsed'],
                 'item_action' => cleanStr($_POST['rep_item_action']),
                 'item_result' => cleanStr($_POST['rep_item_result']),
@@ -519,7 +558,12 @@ class CApplication
     public function getReportList()
     {
         global $arDate;
-        $reportRange = 'curMonth'; //$_POST('reportRange');
+        $reportRange = $_POST['reportRange'];
+        $userId = $_POST['userId'];
+        if (!isset($userId)) {
+            $userId = $this->obB24->arCurrentB24User['id'];
+        }
+
 
         switch ($reportRange) {
             case 'curMonth':
@@ -541,14 +585,14 @@ class CApplication
                      DATE_FORMAT(first_day,'%d.%m.%Y') as correct_first_day,
                      DATE_FORMAT(last_day,'%d.%m.%Y') as correct_last_day
                      FROM rm_reports ?p";
-            $where = "WHERE create_date >='" . $firstDay . "' AND create_date <='" . $lastDay . "'";
+            $where = "WHERE create_date >='{$firstDay}' AND create_date <='{$lastDay}' AND user_id = {$userId}";
             $reportList = $this->obDb->getAll($sql, $where); // запрос к БД
 
             // Генерация HTML шаблона
             $template = $this->obTwig->loadTemplate('report-select.tmpl');
             $reload_html = $template->render(array(
-                'reports' => $reportList,
-                'cur_user' => $this->obB24->arCurrentB24User['id'],
+                'reportList' => $reportList,
+                'is_admin' => $this->obB24->arCurrentB24User['is_admin'],
             ));
 
             $ajax_answer = array(
@@ -1236,7 +1280,7 @@ class CApplication
 
     public function sortTaskByGroup()
     {
-        $sortedItems = array();
+        $sortedItems[0][] = array();
         $this->obB24->getGroups();
 
         // сортировка и группировка массива Задвч по Группам -> $sortedItems
@@ -1310,6 +1354,67 @@ class CApplication
         return $ajax_answer;
     }
 
+    public function getAllTasksWithFullData()
+    {
+        $this->obB24->getAllTasks();
+        $this->obB24->getGroups();
+
+        $table = 'b24_tasks';
+        $sql = "SELECT ID, CACHED_DATE FROM ?n";
+        $cached_tasks = $this->obDb->getIndCol("ID", $sql, $table);
+
+        $numRequests = 0;  // номер текущего запроса к Битрикс
+        $allRequest = 50;  // Общее кол-во запросов к Битрикс за один вызов данной функции
+        foreach ($this->obB24->arB24Tasks as $key => &$task) {
+            if ( (!array_key_exists($task['ID'], $cached_tasks) ||
+                (strtotime($task['CHANGED_DATE']) > strtotime($cached_tasks[$task['ID']]))) && ($numRequests < $allRequest) )
+            {
+                $numRequests++;
+                $arTaskDataFull = $this->obB24->getTaskData($task['ID']);
+                $task['groupId'] = $arTaskDataFull['GROUP_ID'];
+                $task['groupName'] = "";
+                $task['clientId'] = $arTaskDataFull['UF_CRM_TASK'][0] ? $arTaskDataFull['UF_CRM_TASK'][0] : '';
+                $task['clientName'] = "";
+                foreach ($this->obB24->arB24Groups as $index => $group) {
+                    if ($group['ID'] == $task['groupId']) {
+                        $task['groupName'] = $group['NAME'];
+                    }
+                }
+
+                //проверяем клиент fiz или ur И
+                if (strstr($task['clientId'], 'C_') != '') {
+                    $id = intval(substr($task['clientId'], 2));
+                    $arContactData = $this->obB24->getContactData($id, 'fiz');
+                    $task['clientName'] = $arContactData['fiz']['LAST_NAME'] . " " .
+                        $arContactData['fiz']['NAME'] . " " . $arContactData['fiz']['SECOND_NAME'];
+                }
+                if (strstr($task['clientId'], 'CO_') != '') {
+                    $id = intval(substr($task['clientId'], 3));
+                    $arContactData = $this->obB24->getContactData($id, 'ur');
+                    $task['clientName'] = $arContactData['ur']['TITLE'];
+                }
+
+                $data2 = array(
+                    'JSON_TASK_DATA' => json_encode($task, JSON_UNESCAPED_UNICODE),
+                    'CACHED_DATE' => date("Y-m-d H:i:s"),
+                    'clientName' => $task['clientName'],
+                    'TITLE' => $task['TITLE'],
+                );
+                $data1 = $data2;
+                $data1['ID'] = $task['ID'];
+                $sql = "INSERT ?n SET ?u ON DUPLICATE KEY UPDATE ?u";
+                $this->obDb->query($sql, $table, $data1, $data2);
+            }
+        }
+        $sql = "SELECT ID, JSON_TASK_DATA FROM ?n";
+        $cached_tasks = $this->obDb->getIndCol("ID", $sql, $table);
+        $this->obB24->arB24Tasks = array();
+        foreach ($cached_tasks as $id => $item) {
+            $this->obB24->arB24Tasks[] = json_decode($item, true);
+        }
+        return $numRequests;
+    }
+
     public function getTasksDo()
     {
         $this->obB24->getTasksDo();
@@ -1361,6 +1466,22 @@ class CApplication
     public function getTasksAudit()
     {
         $this->obB24->getTasksAudit();
+        $template = $this->obTwig->loadTemplate('task-select.tmpl');
+        $reload_html = $template->render(array(
+            'tasks_data' => $this->sortTaskByGroup(),
+        ));
+        $ajax_answer = array(
+            'status' => 'success',
+            'result' => '',
+            'msg' => '',
+            'reload_html' => $reload_html
+        );
+        return $ajax_answer;
+    }
+
+    public function getTasksAll()
+    {
+        $this->obB24->getTasksAll();
         $template = $this->obTwig->loadTemplate('task-select.tmpl');
         $reload_html = $template->render(array(
             'tasks_data' => $this->sortTaskByGroup(),
